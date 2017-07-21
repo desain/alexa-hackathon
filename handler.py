@@ -9,6 +9,71 @@ http://amzn.to/1LGWsLG
 
 import random
 
+FOODS_LIST = {
+    'pizza': {
+        'Amount': {
+            '1': {
+                'Seconds': 30,
+                'AmountType': 'slice of'
+            },
+            '2': {
+                'Seconds': 60,
+                'AmountType': 'slices of'
+            },
+            '3': {
+                'Seconds': 90,
+                'AmountType': 'slices of'
+            },
+            '4': {
+                'Seconds': 120,
+                'AmountType': 'slices of'
+            }
+        },
+        'PowerLevel': 50,
+        'DefaultType': 'slices of pizza'
+    },
+    'brownie': {
+        'Seconds': 30,
+        'PowerLevel': 100,
+        'DefaultType': 'a brownie'
+    },
+    'brownies': {
+        'Amount': {
+            '2': {
+                'Seconds': 45,
+            },
+            '3': {
+                'Seconds': 60,
+            },
+            '4': {
+                'Seconds': 60,
+            }
+        },
+        'PowerLevel': 100,
+        'DefaultType': 'brownies'
+    },
+    'coffee': {
+        'Seconds': 45,
+        'PowerLevel': 100,
+        'DefaultType': 'a cup of'
+    },
+    'tea': {
+        'Seconds': 45,
+        'PowerLevel': 100,
+        'DefaultType': 'a cup of'
+    },
+    'ramen': {
+        'Seconds': 180,
+        'PowerLevel': 100,
+        'DefaultType': 'a bowl of'
+    },
+    'ramen noodles': {
+        'Seconds': 180,
+        'PowerLevel': 100,
+        'DefaultType': 'a bowl of'
+    }
+}
+
 skill_id = "amzn1.ask.skill.bfe1f384-0007-438a-b30e-3f14b46196ce"
 
 # ----------------- Helpers for the actual functionality ----------------------
@@ -17,6 +82,29 @@ insult_urls = [
     "https://s3.amazonaws.com/hark-audio/252be2a5-273b-4ef4-be71-d18e7b99b0c3.mp3", # bison's penis,
     "https://s3.amazonaws.com/hark-audio/85299a5c-f1f6-45b1-892b-12cfa2a4fa0e.mp3"  # rubber
 ]
+
+def seconds_to_time(time):
+    minutes = time//60
+    seconds = time%60
+    if minutes == 0:
+        if seconds == 1:
+            return '1 second'
+        else:
+            return str(seconds) + ' seconds'
+    elif minutes == 1:
+        if seconds == 0:
+            return 'one minute'
+        elif seconds == 1:
+            return 'one minute and 1 second'
+        else:
+            return 'one minute and ' + str(seconds) + ' seconds'
+    else:
+        if seconds == 0:
+            return str(minutes) + ' minutes'
+        elif seconds == 1:
+            return str(minutes) + ' minutes and 1 second'
+        else:
+            return str(minutes) + ' minutes and ' + str(seconds) + ' seconds'
 
 # --------------- Helpers that build all of the responses ----------------------
 
@@ -51,6 +139,19 @@ def build_speechlet_response(should_end_session, **kwargs):
 
     return response
 
+def build_simple_speechlet_response(title, output, should_end_session):
+    return {
+        'outputSpeech': {
+            'type': 'PlainText',
+            'text': output
+        },
+        'card': {
+            'type': 'Simple',
+            'title': "SessionSpeechlet - " + title,
+            'content': "SessionSpeechlet - " + output
+        },
+        'shouldEndSession': should_end_session
+    }
 
 def build_response(session_attributes, speechlet_response):
     return {
@@ -85,7 +186,47 @@ def handle_session_end_request():
 
 # intent['slots'][NAME]['value']
 
+def build_microwave_start_response():
+    """ If we wanted to initialize the session to have some attributes we could
+    add those here
+    """
 
+    session_attributes = {}
+    card_title = "Microwave Welcome"
+    speech_output = "What food are you trying to microwave?"
+
+    # If the user either does not reply to the welcome message or says something
+    # that is not understood, they will be prompted again with this text.
+    reprompt_text = "Are you trying to microwave somethihng?" + \
+                    "If so, please say a food."
+    should_end_session = False
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
+
+def build_amount_response(food):
+    #SESSION ATTRIBUTES
+    session_attributes = {'Food': food}
+    card_title = "Request Amount"
+
+    speech_output = "How many " + FOODS_LIST[food]['DefaultType'] + \
+                    " would you like to heat up?"
+
+    # If the user either does not reply to the welcome message or says something
+    # that is not understood, they will be prompted again with this text.
+    reprompt_text = "I'm sorry, I didn't get that. " + speech_output
+    should_end_session = False
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
+
+def build_suggestion(speech_output):
+    session_attributes = {}
+    card_title = 'Microwave Suggestion'
+
+    # If the user either does not reply to the welcome message or says something
+    # that is not understood, they will be prompted again with this text.
+    should_end_session = True
+    return build_response(session_attributes, build_simple_speechlet_response(
+        card_title, speech_output, should_end_session))
 
 def get_insult(intent, session):
     session_attributes = {}
@@ -124,12 +265,55 @@ def on_intent(intent_request, session):
     # Dispatch to your skill's intent handlers
     if intent_name == "RamsayInsultIntent":
         return get_insult(intent, session) 
+    elif intent_name == "MicrowaveSuggestionIntent":
+        return get_microwave_suggestion(intent, session) 
     elif intent_name == "AMAZON.HelpIntent":
         return get_welcome_response()
     elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
         return handle_session_end_request()
     else:
         raise ValueError("Invalid intent")
+
+def get_microwave_suggestion(intent, session):
+    slots = intent['slots']
+    food = ''
+    if slots['Food']['value'] in FOODS_LIST:
+        food = slots['Food']['value']
+    elif 'Food' in session['attributes']:
+        food = session['attributes']['Food']
+
+    outputString = 'To reheat '
+    foodData = FOODS_LIST[food]
+    if 'value' not in slots['Amount'] or slots['Amount']['value'] is None and 'Seconds' not in foodData:
+        return build_amount_response(food)
+    else:
+        if 'Seconds' in foodData:
+            outputString += foodData['DefaultType'] + ' '
+        else:
+            outputString += str(slots['Amount']['value']) + ' '
+        amount = slots['Amount']['value']
+
+    if 'value' in slots['AmountType'] and slots['AmountType']['value'] is not None:
+        outputString += slots['AmountType']['value'] + ' '
+    elif 'Amount' in foodData and 'AmountType' in foodData['Amount'][amount]:
+        outputString += foodData['Amount'][amount]['AmountType'] + ' '
+
+    outputString += food + ', '
+
+    powerLevel = foodData['PowerLevel']
+    if powerLevel < 100:
+        outputString += 'set your microwave to ' + str(powerLevel) + \
+                        ' percent power and '
+
+    if 'Seconds' in foodData:
+        outputString += 'microwave it for ' + seconds_to_time(foodData['Seconds']) + '.'
+    else:
+        if amount == 1:
+            outputString += 'microwave it for ' + seconds_to_time(foodData['Amount'][amount]['Seconds']) + '.'
+        else:
+            outputString += 'microwave them for ' + seconds_to_time(foodData['Amount'][amount]['Seconds']) + '.'
+
+    return build_suggestion(outputString)
 
 
 def on_session_ended(session_ended_request, session):
