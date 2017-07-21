@@ -19,7 +19,7 @@ SPICES = {
     "Mustard Seed", "Poppy Seed", "Sesame Seed"],
     'sweet': ["Allspice", "Anise", "Caraway", "Cassia Cinnamon", "Chervil", "Cloves", "Dill Seed",
     "Fennel", "Green cardamom", "Nutmeg", "Poppy Seed", "Sesame Seed", "Star Anise"],
-    'spicy': ["Bay Leaf", "Cassia Cinnamon", "Cloves", "Coriander", "Cumin", "Curry Leaf", "Ginger", "Marjoram", "Nutmeg"],
+    'spicy': ["Red Pepper"],#, "Bay Leaf", "Cassia Cinnamon", "Cloves", "Coriander", "Cumin", "Curry Leaf", "Ginger", "Marjoram", "Nutmeg"],
     'hot': ["Black Pepper", "Chiles", "Horseradish", "Mustard", "Wasabi", "White Pepper"],
     'fruity': ["Anise", "Fennel", "Nigella", "Summer Savory", "Star Anise", "Tamarind"]
 }
@@ -334,7 +334,7 @@ def get_ingredient_from_session(intent, session):
         elif intent['slots']['ListOfIngredients']['value'] == "baking soda":
             speech_output = "1 teaspoon of baking soda can be substituted with 4 teaspoons of baking powder."
         
-        elif intent['slots']['ListOfIngredients']['value'] in ("red pepper flakes", "red pepper")
+        elif intent['slots']['ListOfIngredients']['value'] in ("red pepper flakes", "red pepper"):
             speech_output = "Red pepper can be substituted with black pepper"
 
         return build_response({}, build_speechlet_response(
