@@ -223,6 +223,46 @@ def get_insult(intent, session):
     insult_url = random.choice(insult_urls)
     return build_response(session_attributes, build_speechlet_response(True, directive=build_play_directive(insult_url)))
 
+
+def get_ingredient_from_session(intent, session):
+    card_title = suggestIngredient
+    session_attributes = {}
+    should_end_session = True
+    reprompt_text = None
+    
+    if 'ListOfIngredients' in intent['slots']:
+        if intent['slots']['ListOfIngredients']['value'] == "sugar":
+            speech_output = "1 cup of sugar can be substituted with 3/4 cup corn syrup."
+            return build_response({}, build_speechlet_response(
+        card_title, speech_output, None, should_end_session))
+        
+        elif intent['slots']['ListOfIngredients']['value'] == "flour":
+            speech_output = "1 cup of flour can be substituted with 1 cup of rolled oats."
+            return build_response({}, build_speechlet_response(
+        card_title, speech_output, None, should_end_session))
+        
+        elif intent['slots']['ListOfIngredients']['value'] == "eggs":
+            speech_output = "1 egg can be substituted with 3 tablespoons of mayonnaise."
+            return build_response({}, build_speechlet_response(
+        card_title, speech_output, None, should_end_session))
+        
+        elif intent['slots']['ListOfIngredients']['value'] == "rice":
+            speech_output = "1 cup of rice can be replaced by 1 cup of cooked barley."
+            return build_response({}, build_speechlet_response(
+        card_title, speech_output, None, should_end_session))
+        
+        elif intent['slots']['ListOfIngredients']['value'] == "butter":
+            speech_output = "A cup of butter can be substituted with a cup of margarine."
+            return build_response({}, build_speechlet_response(
+        card_title, speech_output, None, should_end_session))
+        
+        elif intent['slots']['ListOfIngredients']['value'] == "baking soda":
+            speech_output = "1 teaspoon of baking soda can be substituted with 4 teaspoons of baking powder."
+            return build_response({}, build_speechlet_response(
+                should_end_session,
+                outputSpeech=speech_output))
+
+
 # --------------- Events ------------------
 
 def log_session_start(session_started_request, session):
@@ -253,7 +293,9 @@ def on_intent(intent_request, session):
     intent_name = intent_request['intent']['name']
 
     # Dispatch to your skill's intent handlers
-    if intent_name == "RamsayInsultIntent":
+    if intent_name == "GetIngredientSuggestion":
+        return get_ingredient_from_session(intent, session)
+    elif intent_name == "RamsayInsultIntent":
         return get_insult(intent, session) 
     elif intent_name == "MicrowaveSuggestionIntent":
         return get_microwave_suggestion(intent, session) 
