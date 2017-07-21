@@ -230,7 +230,6 @@ def set_ingredient_in_session(intent, session):
     user.
     """
 
-    card_title = intent['name']
     session_attributes = {}
     should_end_session = False
 
@@ -248,7 +247,9 @@ def set_ingredient_in_session(intent, session):
                         "You can tell me your ingredients by saying, " \
                         "add dash to my ingredients"
     return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+            should_end_session,
+            outputSpeech=speech_output,
+            reprompt_text=reprompt_text))
 
 def get_output_with_spices(tastes):
     session_output = ""
