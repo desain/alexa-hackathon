@@ -66,16 +66,13 @@ def get_welcome_response():
     """ If we wanted to initialize the session to have some attributes we could
     add those here
     """
-
     session_attributes = {}
-    card_title = "Welcome"
-    speech_output = "Welcome response"
     # If the user either does not reply to the welcome message or says something
     # that is not understood, they will be prompted again with this text.
-    reprompt_text = "Welcome reprompt text"
-    should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+            should_end_session,
+            outputSpeech="Hi! You can ask me what Gordon Ramsay would think about your food",
+            reprompt_test=reprompt_text))
 
 
 def handle_session_end_request():
