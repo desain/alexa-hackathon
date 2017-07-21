@@ -1,0 +1,131 @@
+{
+  "intents": [
+    {
+      "name": "AMAZON.CancelIntent",
+      "samples": []
+    },
+    {
+      "name": "AMAZON.HelpIntent",
+      "samples": []
+    },
+    {
+      "name": "AMAZON.StopIntent",
+      "samples": []
+    },
+    {
+      "name": "GetIngredientSuggestion",
+      "samples": [
+        "I need an ingredient suggestion",
+        "Can you give me an ingredient suggestion",
+        "Can you give me a replacement ingredient",
+        "Can you suggest an ingredient",
+        "I need a replacement",
+        "I need a suggestion",
+        "I need a new ingredient",
+        "what other ingredient can I use",
+        "Please give me a replacement ingredient",
+        "What's a good substitution for",
+        "Can you give me a substitution for",
+        "Is there a substitution for",
+        "Is there another ingredient for",
+        "Can you give me a substitution ingredient",
+        "I need a substitution for {ListOfIngredients}"
+      ],
+      "slots": [
+        {
+          "name": "ListOfIngredients",
+          "type": "ingredients",
+          "samples": [
+            "{ListOfIngredients}",
+            "I need a substitution for {ListOfIngredients}",
+            "Can you give me one for {ListOfIngredients}",
+            "I need a replacement for {ListOfIngredients}"
+          ]
+        }
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "ingredients",
+      "values": [
+        {
+          "id": "",
+          "name": {
+            "value": "flour",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "sugar",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "rice",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "eggs",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "butter",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "baking soda",
+            "synonyms": []
+          }
+        }
+      ]
+    }
+  ],
+  "prompts": [
+    {
+      "id": "Elicit.Intent-GetIngredientSuggestion.IntentSlot-ListOfIngredients",
+      "promptVersion": "1.0",
+      "definitionVersion": "1.0",
+      "variations": [
+        {
+          "type": "PlainText",
+          "value": "Of course. What ingredient do you need a substitution for?"
+        }
+      ]
+    }
+  ],
+  "dialog": {
+    "version": "1.0",
+    "intents": [
+      {
+        "name": "GetIngredientSuggestion",
+        "confirmationRequired": false,
+        "prompts": {},
+        "slots": [
+          {
+            "name": "ListOfIngredients",
+            "type": "ingredients",
+            "elicitationRequired": true,
+            "confirmationRequired": false,
+            "prompts": {
+              "elicit": "Elicit.Intent-GetIngredientSuggestion.IntentSlot-ListOfIngredients"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
