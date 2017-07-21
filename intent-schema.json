@@ -1,13 +1,19 @@
 {
-  "intents": [
+    "intents": [
     {
-      "intent": "AMAZON.ResumeIntent"
+        "intent": "AMAZON.ResumeIntent"
     },
     {
-      "intent": "AMAZON.PauseIntent"
+        "intent": "AMAZON.PauseIntent"
     },
     {
-      "intent": "RamsayInsultIntent"
+        "intent": "RamsayInsultIntent",
+        "slots": [
+            {
+                "name": "FoodName",
+                "type": "AMAZON.Food"
+            }
+        ]
     }
-  ]
+    ]
 }
