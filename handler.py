@@ -8,6 +8,22 @@ http://amzn.to/1LGWsLG
 """
 
 import random
+import random
+import time
+
+SPICES = {
+    'bitter': ["Ajwain", "Bay Leaf", "Celery", "Clove", "Cumin Seed", "Epazote", "Fenugreek Seeds",
+    "Horseradish", "Juniper", "Lavender", "Mace", "Marjoram", "Oregano", "Summer Savory", "Sichuan Peppercorns",
+    "Star Anise", "Turmeric", "Thyme"],
+    'cooling': ["Anise",  "Fennel", "Sweet Basil"],
+    'nutty': ["Ajwain", "Black Cardamom", "Coriander Seed", "Cumin Seed", "Fenugreek Seed",
+    "Mustard Seed", "Poppy Seed", "Sesame Seed"],
+    'sweet': ["Allspice", "Anise", "Caraway", "Cassia Cinnamon", "Chervil", "Cloves", "Dill Seed",
+    "Fennel", "Green cardamom", "Nutmeg", "Poppy Seed", "Sesame Seed", "Star Anise"],
+    'spicy': ["Bay Leaf", "Cassia Cinnamon", "Cloves", "Coriander", "Cumin", "Curry Leaf", "Ginger", "Marjoram", "Nutmeg"],
+    'hot': ["Black Pepper", "Chiles", "Horseradish", "Mustard", "Wasabi", "White Pepper"],
+    'fruity': ["Anise", "Fennel", "Nigella", "Summer Savory", "Star Anise", "Tamarind"]
+}
 
 FOODS_LIST = {
     'pizza': {
@@ -125,7 +141,7 @@ def build_play_directive(url):
 def build_speechlet_response(should_end_session, **kwargs):
     response = {'shouldEndSession': should_end_session}
 
-    if 'reprompt_text' in kwargs: 
+    if 'reprompt_text' in kwargs:
         # Setting reprompt_text to None signifies that we do not want to reprompt
         # the user. If the user does not respond or says something that is not
         # understood, the session will end.
@@ -189,7 +205,7 @@ def build_microwave_start_response():
             should_end_session,
             outputSpeech=speech_output,
             reprompt_text=reprompt_text))
-            
+
 
 def build_amount_response(food):
     #SESSION ATTRIBUTES
@@ -207,6 +223,42 @@ def build_amount_response(food):
             outputSpeech=speech_output,
             reprompt_text=reprompt_text))
 
+################ SPICE SUGGESTER CODE ###################
+
+def set_ingredient_in_session(intent, session):
+    """ Sets the color in the session and prepares the speech to reply to the
+    user.
+    """
+
+    card_title = intent['name']
+    session_attributes = {}
+    should_end_session = False
+
+    if 'Foodone' in intent['slots'] and 'Foodtwo' in intent['slots']:
+        ingredient1 = intent['slots']['Foodone']['value']
+        ingredient2 = intent['slots']['Foodtwo']['value']
+        # session_attributes = create_ingredients_attributes(ingredients, session)
+        speech_output = get_output_with_spices([ingredient1, ingredient2])
+        reprompt_text = ". You can ask me for spice suggestions by saying, " \
+                        "what spices do I use"
+    else:
+        speech_output = "I'm not sure what your ingredient is. " \
+                        "Please try again."
+        reprompt_text = "I'm not sure what your ingredient is. " \
+                        "You can tell me your ingredients by saying, " \
+                        "add dash to my ingredients"
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
+
+def get_output_with_spices(tastes):
+    session_output = ""
+    random.seed(time.time())
+
+    for taste in tastes:
+         session_output += "Use " + SPICES[taste][random.randint(0, len(SPICES[taste])-1)] + " for a " + taste + " taste, "
+    return session_output
+
+################ SPICE SUGGESTER CODE ###################
 
 def build_suggestion(speech_output):
     session_attributes = {}
@@ -217,7 +269,7 @@ def build_suggestion(speech_output):
     return build_response(session_attributes, build_speechlet_response(
             should_end_session,
             outputSpeech=speech_output))
-            
+
 def get_insult(intent, session):
     session_attributes = {}
     insult_url = random.choice(insult_urls)
@@ -228,7 +280,7 @@ def get_ingredient_from_session(intent, session):
     session_attributes = {}
     should_end_session = True
     reprompt_text = None
-    
+
     if 'ListOfIngredients' in intent['slots']:
         if intent['slots']['ListOfIngredients']['value'] == "sugar":
             speech_output = "1 cup of sugar can be substituted with 3/4 cup corn syrup."
@@ -300,9 +352,11 @@ def on_intent(intent_request, session):
     if intent_name == "GetIngredientSuggestion":
         return get_ingredient_from_session(intent, session)
     elif intent_name == "RamsayInsultIntent":
-        return get_insult(intent, session) 
+        return get_insult(intent, session)
     elif intent_name == "MicrowaveSuggestionIntent":
-        return get_microwave_suggestion(intent, session) 
+        return get_microwave_suggestion(intent, session)
+    elif intent_name == "GetIngredientsIntent":
+        return set_ingredient_in_session(intent, session)
     elif intent_name == "AMAZON.HelpIntent":
         return get_welcome_response()
     elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
@@ -394,4 +448,3 @@ def lambda_handler(event, context):
         response = on_session_ended(event['request'], event['session'])
 
     return response
-
