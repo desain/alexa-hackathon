@@ -1,0 +1,13 @@
+{
+  "intents": [
+    {
+      "intent": "AMAZON.ResumeIntent"
+    },
+    {
+      "intent": "AMAZON.PauseIntent"
+    },
+    {
+      "intent": "RamsayInsultIntent"
+    }
+  ]
+}
