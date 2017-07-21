@@ -66,6 +66,205 @@
             "type": "ingredients"
         }
         ]
+    },
+    {
+      "name": "FilterByCategoryIntent",
+      "samples": [
+        "i want a {Category}",
+        "i want a {Category} side dish for {MainDish}",
+        "give me a {Category} side dish for {MainDish}"
+      ],
+      "slots": [
+        {
+          "name": "Category",
+          "type": "Category",
+          "samples": []
+        },
+        {
+          "name": "MainDish",
+          "type": "MainDish",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "GetAllSuggestionsIntent",
+      "samples": [
+        "give me all of them",
+        "say all",
+        "all"
+      ],
+      "slots": []
+    },
+    {
+      "name": "GetSuggestionIntent",
+      "samples": [],
+      "slots": []
+    },
+    {
+      "name": "MyMainDishIsIntent",
+      "samples": [
+        "{MainDish}",
+        "my main dish is {MainDish}",
+        "it's {MainDish}",
+        "give me a side dish for {MainDish}"
+      ],
+      "slots": [
+        {
+          "name": "MainDish",
+          "type": "MainDish",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "NoIntent",
+      "samples": [
+        "no",
+        "nah",
+        "nay",
+        "no thank you",
+        "nope"
+      ],
+      "slots": []
+    },
+    {
+      "name": "RemoveFilterIntent",
+      "samples": [
+        "remove category",
+        "remove filter",
+        "stop filtering",
+        "remove {Category}"
+      ],
+      "slots": [
+        {
+          "name": "Category",
+          "type": "Category",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "SideDishIntent",
+      "samples": [
+        "give me a side dish suggestion",
+        "give me a side dish",
+        "i need a side dish",
+        "i want a side dish"
+      ],
+      "slots": []
+    },
+    {
+      "name": "YesIntent",
+      "samples": [
+        "yes",
+        "yeah",
+        "okay",
+        "sure",
+        "yep",
+        "yes please"
+      ],
+      "slots": []
+    }
+  ],
+  "types": [
+    {
+      "name": "Category",
+      "values": [
+        {
+          "id": null,
+          "name": {
+            "value": "vegetable",
+            "synonyms": [
+              "vegetables"
+            ]
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "starch",
+            "synonyms": [
+              "bread",
+              "potatoes"
+            ]
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "beans",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "soup",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "fruit",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "something else",
+            "synonyms": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "MainDish",
+      "values": [
+        {
+          "id": null,
+          "name": {
+            "value": "lasagna",
+            "synonyms": [
+              "pasta"
+            ]
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "steak",
+            "synonyms": [
+              "beef"
+            ]
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "salmon",
+            "synonyms": [
+              "fish"
+            ]
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "tacos",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "pizza",
+            "synonyms": []
+          }
+        }
+      ]
     }
     ]
 }

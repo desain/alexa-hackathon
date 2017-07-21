@@ -8,7 +8,6 @@ http://amzn.to/1LGWsLG
 """
 
 import random
-import random
 import time
 
 SPICES = {
@@ -88,6 +87,40 @@ FOODS_LIST = {
         'PowerLevel': 100,
         'DefaultType': 'a bowl of'
     }
+}
+
+# --------------- Side Dish Dummy Data --------------------
+
+vegetable = 'vegetable'
+starch = 'starch'
+beans = 'beans'
+soup = 'soup'
+fruit = 'fruit'
+caesar_salad = { 'name': 'Caesar salad', 'categories': [vegetable] }
+mashed_potatoes = { 'name': 'mashed potatoes', 'categories': [starch] }
+asparagus = { 'name': 'asparagus', 'categories': [vegetable] }
+spinach = { 'name': 'spinach', 'categories': [vegetable] }
+zucchini_and_squash = { 'name': 'zucchini and squash', 'categories': [vegetable] }
+veggie_stir_fry = { 'name': 'vegetable stir fry', 'categories': [vegetable] }
+green_beans = { 'name': 'green beans', 'categories': [vegetable, beans] }
+curry = { 'name': 'curry', 'categories': [vegetable] }
+tomato_soup = { 'name': 'tomato soup', 'categories': [vegetable, soup] }
+pickled_veggies = { 'name': 'pickled vegetables', 'categories': [vegetable] }
+cabbage_salad = { 'name': 'cabbage salad', 'categories': [vegetable] }
+fries = { 'name': 'fries', 'categories': [starch] }
+hash_browns = { 'name': 'hash browns', 'categories': [starch] }
+bread_sticks = { 'name': 'bread sticks', 'categories': [starch] }
+garlic_bread = { 'name': 'garlic bread', 'categories': [starch] }
+peas_and_carrots = { 'name': 'peas and carrots', 'categories': [vegetable] }
+refried_beans = { 'name': 'refried beans', 'categories': [beans] }
+berries = { 'name': 'berries', 'categories': [fruit] }
+
+main_to_side = {
+    'lasagna': [caesar_salad, asparagus, spinach, zucchini_and_squash, green_beans, cabbage_salad, garlic_bread],
+    'steak': [fries, bread_sticks, peas_and_carrots, caesar_salad],
+    'salmon': [spinach, pickled_veggies, curry, veggie_stir_fry, zucchini_and_squash, asparagus],
+    'tacos': [refried_beans, hash_browns],
+    'pizza': [caesar_salad, bread_sticks, garlic_bread, tomato_soup]
 }
 
 skill_id = "amzn1.ask.skill.bfe1f384-0007-438a-b30e-3f14b46196ce"
@@ -175,7 +208,7 @@ def get_welcome_response():
     # that is not understood, they will be prompted again with this text.
     return build_response(session_attributes, build_speechlet_response(
             should_end_session,
-            outputSpeech="Hi! You can ask me what Gordon Ramsay would think about your food",
+            outputSpeech="Welcome to the Swiss Kitchen Knife; I know many things.",
             reprompt_test=reprompt_text))
 
 
@@ -308,7 +341,271 @@ def get_ingredient_from_session(intent, session):
             should_end_session,
             outputSpeech=speech_output))
 
+        
+def get_main_dish(intent, session):
+    session_attributes = {}
 
+    if session.get('attributes', {}) and "mainDish" in session.get('attributes', {}):
+        main_dish = session['attributes']['mainDish']
+        speech_output = "You're looking for a side dish for " + main_dish + \
+                        ", right?"
+    else:
+        speech_output = "Okay, let's make something tasty. What is the main dish?"
+    
+    reprompt_text = "Sorry, I didn't catch that. What is the main dish?"
+    should_end_session = False
+    
+    return build_response(session_attributes, build_speechlet_response(
+        intent['name'], speech_output, reprompt_text, should_end_session))
+        
+        
+# Sets the main dish in the session
+def set_main_dish(intent, session):
+    card_title = intent['name']
+    session_attributes = {}
+    should_end_session = False
+
+    if 'MainDish' in intent['slots']:
+        main_dish = intent['slots']['MainDish']['value']
+        session_attributes = { "mainDish" : main_dish }
+        side_dishes = get_side_dishes_for(main_dish)
+        session_attributes['sideDishes'] = side_dishes
+        speech_output = "I have " + str(len(side_dishes)) + " suggestions for " \
+                        + main_dish + \
+                        ". Would you like to filter them by a category?"
+        reprompt_text = "would you like to filter them by category? You can " \
+                        "also hear all the suggestions by saying, all."
+    else:
+        speech_output = "I didn't catch what the main dish is. " \
+                        "Would you say it again?"
+        reprompt_text = speech_output
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
+        
+def get_filter_category(intent, session):
+    session_attributes = session.get('attributes', {})
+    should_end_session = False
+    speech_output = "Alright, are you looking for a vegetable, starch, beans, " \
+                    "soup, fruit, or something else?"
+    reprompt_text = speech_output
+    return build_response(session_attributes, build_speechlet_response(
+        intent['name'], speech_output, reprompt_text, should_end_session))
+        
+# Creates a sublist of all the side dishes for the user based on a specified category
+def filter_by_category(intent, session):
+    session_attributes = session.get('attributes', {})
+    should_end_session = False
+    if 'MainDish' in intent['slots']:
+        main_dish = intent['slots']['MainDish']['value']
+        session['attributes']['mainDish'] = main_dish
+    if 'Category' in intent['slots']:
+        category = intent['slots']['Category']['value']
+        session['attributes']['category'] = category
+    if "mainDish" in session_attributes:
+        main_dish = session['attributes']['mainDish']
+        if "sideDishes" not in session_attributes:
+            side_dishes = get_side_dishes_for(main_dish)
+            if side_dishes == None:
+                return build_response(session_attributes, build_speechlet_response(
+                    intent['name'], "Sorry, I don't know about that dish.", None, True))
+        else:
+            side_dishes = session['attributes']['sideDishes']
+        session_attributes['sideDishes'] = side_dishes
+        if 'Category' in intent['slots']:
+            category = intent['slots']['Category']['value']
+            session_attributes['category'] = category
+            filtered_side_dishes = get_sides_for_category(side_dishes, category)
+            if len(filtered_side_dishes) == 0:
+                del session_attributes['category']
+                speech_output = "Sorry, it looks like there are no " + category \
+                                + " side dishes. Try a different category by saying " \
+                                "something like, I want a starch on the side."
+            else:
+                session_attributes['filteredSideDishes'] = filtered_side_dishes
+                speech_output = "Okay, I have " + str(len(filtered_side_dishes)) \
+                                + " " + category + " suggestions. " \
+                                "Would you like to hear them all?"
+        else:
+            speech_output = "Sorry, I didn't get the category filter. You can say, " \
+                            "I want a vegetable side dish."
+    else:
+        speech_output = "I'm not sure what your main dish is. " \
+                        "You can say, the main dish is salmon."
+    reprompt_text = speech_output
+
+    return build_response(session_attributes, build_speechlet_response(
+        intent['name'], speech_output, reprompt_text, should_end_session))
+
+# Returns the list of dishes associated with the given dish
+def get_side_dishes_for(main_dish):
+    # Find all side dishes mapped to the main dish
+    return main_to_side.get(main_dish, None)
+
+# Returns the sublist of side dishes that are included in the given category
+def get_sides_for_category(side_dishes, category):
+    filtered_list = []
+    for dish in side_dishes:
+        if category in dish['categories']:
+            filtered_list.append(dish)
+    return filtered_list
+
+# Removes the category filter if it exists
+def remove_filter(intent, session):
+    session_attributes = session.get('attributes', {})
+    should_end_session = False
+
+    if "mainDish" in session_attributes:
+        main_dish = session['attributes']['mainDish']
+        if "sideDishes" not in session_attributes:
+            side_dishes = get_side_dishes_for(main_dish)
+        else:
+            side_dishes = session['attributes']['sideDishes']
+        session_attributes['sideDishes'] = side_dishes
+        if session_attributes['category']:
+            category = session_attributes['category']
+            del session_attributes['category']
+            speech_output = "Okay, a " + category + " side dish is overrated. "
+        else:
+            speech_output = ""
+        if session_attributes['filteredSideDishes']:
+            del session_attributes['filteredSideDishes']
+        speech_output += "Would you like to filter by a different category?"
+    else:
+        speech_output = "I'm not sure what your main dish is. " \
+                        "You can say, the main dish is lasagna."
+    reprompt_text = speech_output
+    session_attributes['madeSuggestion'] = false
+
+    return build_response(session_attributes, build_speechlet_response(
+        intent['name'], speech_output, reprompt_text, should_end_session))
+
+def get_suggestion(intent, session):
+    session_attributes = session.get('attributes', {})
+    session_attributes['madeSuggestion'] = False
+    should_end_session = False
+
+    if "mainDish" in session_attributes:
+        main_dish = session['attributes']['mainDish']
+        if "sideDishes" not in session_attributes:
+            side_dishes = get_side_dishes_for(main_dish)
+        else:
+            side_dishes = session['attributes']['sideDishes']
+            
+        session_attributes['sideDishes'] = side_dishes
+        if "category" in session_attributes and "filteredSideDishes" in session_attributes:
+            if len(session_attributes) > 1:
+                suggestion = get_random_suggestion(session_attributes['filteredSideDishes'])
+                session_attributes['madeSuggestion'] = True
+                session_attributes['lastSuggestion'] = suggestion
+                category = session_attributes['category']
+                speech_output = "Okay, here is one suggestion from the " + category + " category: " \
+                                + suggestion['name'] + " goes well with " + main_dish \
+                                + ". Does that sound good?"
+            else:
+                speech_output = "Sorry, I ran out of suggestions."
+                should_end_session = True
+        else:
+            if len(side_dishes) > 1:
+                suggestion = get_random_suggestion(side_dishes)
+                speech_output = "Here is a suggestion... " + suggestion['name'] + " goes " \
+                                "well with " + main_dish + ". Does that sound good?"
+            else:
+                speech_output = "Sorry, I ran out of suggestions."
+                should_end_session = True
+    else:
+        speech_output = "I'm not sure what your main dish is. " \
+                        "You can say, the main dish is tacos."
+    reprompt_text = speech_output
+
+    return build_response(session_attributes, build_speechlet_response(
+        intent['name'], speech_output, reprompt_text, should_end_session))
+
+# Returns a single side dish from the list of suggestions
+# Assumes the list has length >= 1
+def get_random_suggestion(suggestions):
+    return random.sample(suggestions, 1)[0]
+
+# Recites all suggestions (filtered or not) to the user    
+def get_all_suggestions(intent, session):
+    session_attributes = session.get('attributes', {})
+    session_attributes['madeSuggestion'] = False
+    should_end_session = False
+
+    if "mainDish" in session_attributes:
+        main_dish = session['attributes']['mainDish']
+        if "sideDishes" not in session_attributes:
+            side_dishes = get_side_dishes_for(main_dish)
+        else:
+            side_dishes = session['attributes']['sideDishes']
+            
+        session_attributes['sideDishes'] = side_dishes
+        if "category" in session_attributes and "filteredSideDishes" in session_attributes:
+            suggestions = session_attributes['filteredSideDishes']
+            speech_output = "Okay, here are all the " + session_attributes['category'] + " suggestions: "
+        else:
+            suggestions = side_dishes
+            speech_output = "Okay, here are all " + str(len(suggestions)) + " suggestions: "
+        for side_dish in suggestions:
+            speech_output += (side_dish['name'] + ", ")
+        speech_output += " and whatever you like. Did something sound good?"
+        reprompt_text = "Did something sound good?"
+        session_attributes['madeSuggestion'] = True
+    else:
+        speech_output = "I'm not sure what your main dish is. " \
+                        "You can say, the main dish is steak."
+        reprompt_text = speech_output
+
+    return build_response(session_attributes, build_speechlet_response(
+        intent['name'], speech_output, reprompt_text, should_end_session))
+
+def yes(intent, session):
+    session_attributes = session.get('attributes', {})
+
+    if "madeSuggestion" in session_attributes and session_attributes["madeSuggestion"] is True:
+        return build_response(session_attributes, build_speechlet_response(
+            intent['name'], "Glad I could help!", None, True))
+    elif "category" in session_attributes:
+        intent['name'] = "GetAllSuggestionsIntent"
+        return get_all_suggestions(intent, session)
+    elif "mainDish" in session_attributes:
+        intent['name'] = "FilterByCategoryIntent"
+        return get_filter_category(intent, session)
+    else:
+        intent['name'] = "SideDishIntent"
+        return get_main_dish(intent, session)
+
+def no(intent, session):
+    session_attributes = session.get('attributes', {})
+
+    if "madeSuggestion" in session_attributes and session_attributes["madeSuggestion"] is True:
+        if "lastSuggestion" in session_attributes:
+            remove_last_suggestion(session_attributes)
+            session['attributes'] = session_attributes
+            intent['name'] = "GetSuggestionIntent"
+            return get_suggestion(intent, session)
+        elif "category" in session_attributes:
+            intent['name'] = "RemoveFilterIntent"
+            return remove_filter(intent, session)
+        else:
+            return build_response(session_attributes, build_speechlet_response(
+                intent['name'], "I'm sorry I didn't have better options.", None, True))
+    elif "mainDish" in session_attributes:
+        intent['name'] = "GetSuggestionIntent"
+        return get_suggestion(intent, session)
+    else:
+        intent['name'] = "SideDishIntent"
+        return get_main_dish(intent, session)
+
+# Removes the last suggestion made in the session from all stored lists        
+def remove_last_suggestion(session_attributes):
+      bad_suggestion = session_attributes['lastSuggestion']
+      session_attributes['sideDishes'].remove(bad_suggestion)
+      if 'category' in session_attributes:
+          session_attributes['filteredSideDishes'].remove(bad_suggestion)
+      del session_attributes["lastSuggestion"]
+      return
+            
+            
 # --------------- Events ------------------
 
 def log_session_start(session_started_request, session):
@@ -351,6 +648,22 @@ def on_intent(intent_request, session):
         return get_welcome_response()
     elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
         return handle_session_end_request()
+    elif intent_name == "SideDishIntent":
+        return get_main_dish(intent, session)
+    elif intent_name == "MyMainDishIsIntent":
+        return set_main_dish(intent, session)
+    elif intent_name == "FilterByCategoryIntent":
+        return filter_by_category(intent, session)
+    elif intent_name == "RemoveFilterIntent":
+        return remove_filter(intent, session)
+    elif intent_name == "GetSuggestionIntent":
+        return get_suggestion(intent, session)
+    elif intent_name == "GetAllSuggestionsIntent":
+        return get_all_suggestions(intent, session)
+    elif intent_name == "YesIntent":
+        return yes(intent, session)
+    elif intent_name == "NoIntent":
+        return no(intent, session)
     else:
         raise ValueError("Invalid intent")
 
