@@ -46,6 +46,19 @@
         ]
     },
     {
+      "intent": "GetIngredientsIntent",
+      "slots": [
+        {
+          "name": "Foodone",
+          "type": "LIST_OF_INGREDIENTS"
+        },
+        {
+          "name": "Foodtwo",
+          "type": "LIST_OF_INGREDIENTS"
+        }
+      ]
+    },
+    {
         "intent": "GetIngredientSuggestion",
         "slots": [
         {
