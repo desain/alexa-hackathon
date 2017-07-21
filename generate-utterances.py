@@ -80,3 +80,5 @@ GetIngredientSuggestion Is there another ingredient for
 GetIngredientSuggestion Can you give me a substitution ingredient
 GetIngredientSuggestion I need a substitution for {ListOfIngredients}
 """)
+
+print("GetIngredientsIntent give me spice suggestions for {Foodone} and {Foodtwo}")
