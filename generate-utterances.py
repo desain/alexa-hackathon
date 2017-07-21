@@ -45,3 +45,16 @@ gen("{} {} like {}",
     target,
     ramsay
 )
+
+print("""
+MicrowaveSuggestionIntent {Amount}
+MicrowaveSuggestionIntent {Food}
+MicrowaveSuggestionIntent {Amount} {Food}
+MicrowaveSuggestionIntent {Amount} {AmountType} {Food}
+MicrowaveSuggestionIntent {QuestionPhrasings} {Food}
+MicrowaveSuggestionIntent {QuestionPhrasings} {Amount} {Food}
+MicrowaveSuggestionIntent {QuestionPhrasings} {Amount} {AmountType} {Food}
+MicrowaveSuggestionIntent {QuestionPhrasings} {Food} for
+MicrowaveSuggestionIntent {QuestionPhrasings} {Amount} {Food} for
+MicrowaveSuggestionIntent {QuestionPhrasings} {Amount} {AmountType} {Food} for
+""")

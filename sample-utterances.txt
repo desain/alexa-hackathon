@@ -469,3 +469,15 @@ RamsayInsultIntent mock my {FoodName} like ramsay
 RamsayInsultIntent mock my {FoodName} like gordon ramsay
 RamsayInsultIntent mock my {FoodName} like the hell's kitchen chef
 RamsayInsultIntent mock my {FoodName} like hell's kitchen chef
+
+MicrowaveSuggestionIntent {Amount}
+MicrowaveSuggestionIntent {Food}
+MicrowaveSuggestionIntent {Amount} {Food}
+MicrowaveSuggestionIntent {Amount} {AmountType} {Food}
+MicrowaveSuggestionIntent {QuestionPhrasings} {Food}
+MicrowaveSuggestionIntent {QuestionPhrasings} {Amount} {Food}
+MicrowaveSuggestionIntent {QuestionPhrasings} {Amount} {AmountType} {Food}
+MicrowaveSuggestionIntent {QuestionPhrasings} {Food} for
+MicrowaveSuggestionIntent {QuestionPhrasings} {Amount} {Food} for
+MicrowaveSuggestionIntent {QuestionPhrasings} {Amount} {AmountType} {Food} for
+

@@ -9,10 +9,31 @@
     {
         "intent": "RamsayInsultIntent",
         "slots": [
-            {
-                "name": "FoodName",
-                "type": "AMAZON.Food"
-            }
+        {
+            "name": "FoodName",
+            "type": "AMAZON.Food"
+        }
+        ]
+    },
+    {
+        "intent": "MicrowaveSuggestionIntent",
+        "slots": [
+        {
+            "name": "Amount",
+            "type": "AMAZON.NUMBER"
+        },
+        {
+            "name": "Food",
+            "type": "Food"
+        },
+        {
+            "name": "AmountType",
+            "type": "AmountTypes"
+        },
+        {
+            "name": "QuestionPhrasings",
+            "type": "QuestionPhrasings"
+        }
         ]
     }
     ]

@@ -181,10 +181,9 @@ def handle_session_end_request():
     # Setting this to true ends the session and exits the skill.
     should_end_session = True
     return build_response({}, build_speechlet_response(
-        card_title, speech_output, None, should_end_session))
+            should_end_session=True,
+            outputSpeech=speech_output))
 
-
-# intent['slots'][NAME]['value']
 
 def build_microwave_start_response():
     """ If we wanted to initialize the session to have some attributes we could
@@ -192,7 +191,6 @@ def build_microwave_start_response():
     """
 
     session_attributes = {}
-    card_title = "Microwave Welcome"
     speech_output = "What food are you trying to microwave?"
 
     # If the user either does not reply to the welcome message or says something
@@ -201,12 +199,14 @@ def build_microwave_start_response():
                     "If so, please say a food."
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+            should_end_session,
+            outputSpeech=speech_output,
+            reprompt_text=reprompt_text))
+            
 
 def build_amount_response(food):
     #SESSION ATTRIBUTES
     session_attributes = {'Food': food}
-    card_title = "Request Amount"
 
     speech_output = "How many " + FOODS_LIST[food]['DefaultType'] + \
                     " would you like to heat up?"
@@ -216,18 +216,21 @@ def build_amount_response(food):
     reprompt_text = "I'm sorry, I didn't get that. " + speech_output
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+            should_end_session,
+            outputSpeech=speech_output,
+            reprompt_text=reprompt_text))
+
 
 def build_suggestion(speech_output):
     session_attributes = {}
-    card_title = 'Microwave Suggestion'
 
     # If the user either does not reply to the welcome message or says something
     # that is not understood, they will be prompted again with this text.
     should_end_session = True
     return build_response(session_attributes, build_simple_speechlet_response(
-        card_title, speech_output, should_end_session))
-
+            should_end_session,
+            outputSpeech=speech_output))
+            
 def get_insult(intent, session):
     session_attributes = {}
     insult_url = random.choice(insult_urls)
