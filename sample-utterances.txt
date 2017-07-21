@@ -481,3 +481,23 @@ MicrowaveSuggestionIntent {QuestionPhrasings} {Food} for
 MicrowaveSuggestionIntent {QuestionPhrasings} {Amount} {Food} for
 MicrowaveSuggestionIntent {QuestionPhrasings} {Amount} {AmountType} {Food} for
 
+
+GetIngredientSuggestion I need a substitution for {ListOfIngredients}
+GetIngredientSuggestion Can you give me one for {ListOfIngredients}
+GetIngredientSuggestion I need a replacement for {ListOfIngredients}
+GetIngredientSuggestion I need an ingredient suggestion
+GetIngredientSuggestion Can you give me an ingredient suggestion
+GetIngredientSuggestion Can you give me a replacement ingredient
+GetIngredientSuggestion Can you suggest an ingredient
+GetIngredientSuggestion I need a replacement
+GetIngredientSuggestion I need a suggestion
+GetIngredientSuggestion I need a new ingredient
+GetIngredientSuggestion what other ingredient can I use
+GetIngredientSuggestion Please give me a replacement ingredient
+GetIngredientSuggestion What's a good substitution for
+GetIngredientSuggestion Can you give me a substitution for
+GetIngredientSuggestion Is there a substitution for
+GetIngredientSuggestion Is there another ingredient for
+GetIngredientSuggestion Can you give me a substitution ingredient
+GetIngredientSuggestion I need a substitution for {ListOfIngredients}
+
